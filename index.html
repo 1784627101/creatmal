@@ -4,18 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>人机验证 - 机械动力蓝图社区</title>
-
-    <!-- ========== 加载 Turnstile ========== -->
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-
     <style>
-        /* ===== 全局重置 ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
             background: #0f0f0f;
@@ -25,8 +20,6 @@
             justify-content: center;
             align-items: center;
         }
-
-        /* ===== 验证卡片（与你网站风格一致） ===== */
         .verify-card {
             background: #1a1a1a;
             border: 1px solid #2a2a2a;
@@ -37,39 +30,31 @@
             text-align: center;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
-
         .verify-card .logo {
             font-size: 24px;
             font-weight: 700;
             color: #3b82f6;
             margin-bottom: 4px;
         }
-
         .verify-card .logo span {
             color: #e0e0e0;
         }
-
         .verify-card .subtitle {
             color: #6b7280;
             font-size: 14px;
             margin-bottom: 28px;
         }
-
-        /* ===== Turnstile 容器 ===== */
         .turnstile-wrapper {
             display: flex;
             justify-content: center;
             min-height: 70px;
             margin-bottom: 12px;
         }
-
-        /* ===== 状态文字 ===== */
         #status {
             font-size: 14px;
             min-height: 24px;
             margin-top: 4px;
         }
-
         #status.loading {
             color: #fbbf24;
         }
@@ -79,8 +64,6 @@
         #status.error {
             color: #ef4444;
         }
-
-        /* ===== 跳转按钮 ===== */
         #goBtn {
             display: none;
             margin-top: 16px;
@@ -94,18 +77,14 @@
             cursor: pointer;
             transition: background 0.2s;
         }
-
         #goBtn:hover {
             background: #2563eb;
         }
-
-        /* ===== 页脚 ===== */
         .footer {
             margin-top: 24px;
             font-size: 12px;
             color: #4b5563;
         }
-
         .footer a {
             color: #3b82f6;
             text-decoration: none;
@@ -113,15 +92,9 @@
     </style>
 </head>
 <body>
-
     <div class="verify-card">
-        <!-- 品牌 Logo -->
-        <div class="logo">
-            Create<span>Mechanical</span>
-        </div>
+        <div class="logo">Create<span>Mechanical</span></div>
         <p class="subtitle">人机验证 · 请完成下方验证</p>
-
-        <!-- ===== Turnstile 挂载点 ===== -->
         <div class="turnstile-wrapper">
             <div class="cf-turnstile"
                  id="turnstileContainer"
@@ -131,54 +104,25 @@
                  data-expired-callback="onVerifyExpired">
             </div>
         </div>
-
-        <!-- 状态文字 -->
-        <div id="status">⏳ 正在加载验证...</div>
-
-        <!-- 跳转按钮 -->
-        <button id="goBtn" onclick="goToTarget()">✅ 验证通过，进入网站</button>
-
+        <div id="status">加载验证中...</div>
+        <button id="goBtn" onclick="goToTarget()">验证通过，进入网站</button>
         <div class="footer">
             由 Cloudflare Turnstile 保护 · <a href="#" onclick="location.reload()">刷新重试</a>
         </div>
     </div>
 
     <script>
-        // ============================================================
-        //  目标网址（验证成功后跳转）
-        // ============================================================
-        const TARGET_URL = 'https://1784627101.github.io/creatmodel/';
+        var TARGET_URL = 'https://1784627101.github.io/creatmodel/';
+        var API_URL = 'https://energetic-presence-production.up.railway.app/api';
+        var statusEl = document.getElementById('status');
+        var goBtn = document.getElementById('goBtn');
 
-        // ============================================================
-        //  后端 API 地址（使用你的现有后端）
-        // ============================================================
-        const API_URL = 'https://energetic-presence-production.up.railway.app/api';
-
-        // ============================================================
-        //  DOM 引用
-        // ============================================================
-        const statusEl = document.getElementById('status');
-        const goBtn = document.getElementById('goBtn');
-
-        // ============================================================
-        //  Turnstile 回调函数
-        // ============================================================
-
-        /**
-         * 验证成功：调用后端验证 token
-         */
         window.onVerifySuccess = function (token) {
-            console.log('✅ 前端验证成功，token:', token);
-            statusEl.textContent = '⏳ 正在验证身份...';
+            statusEl.textContent = '正在验证身份...';
             statusEl.className = 'loading';
-
-            // ===== 调用后端验证 =====
-            // 复用注册接口来验证 token（传一个临时用户名，后端会走完 Turnstile 验证但不会真正注册）
-            // 因为注册接口会检查用户名是否存在，所以传一个极长且不可能存在的用户名
-            const fakeUsername = 'turnstile_verify_' + Date.now();
-            const fakePassword = 'TempPass123!';
-
-            fetch(`${API_URL}/register`, {
+            var fakeUsername = 'turnstile_verify_' + Date.now();
+            var fakePassword = 'TempPass123!';
+            fetch(API_URL + '/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -186,94 +130,52 @@
                     password: fakePassword,
                     email: 'verify@temp.com',
                     agreedTosVersion: 'v1.0',
-                    token: token  // ← 把 Turnstile token 传给后端
+                    token: token
                 })
             })
-            .then(res => res.json())
-            .then(result => {
-                console.log('后端验证结果:', result);
-
+            .then(function(res) { return res.json(); })
+            .then(function(result) {
                 if (result.success) {
-                    // 理论上不会成功（因为用户名不可能存在），但如果成功了说明是意外情况
-                    statusEl.textContent = '✅ 验证通过！';
+                    statusEl.textContent = '验证通过';
                     statusEl.className = 'success';
                     goBtn.style.display = 'inline-block';
-                } else if (result.error && result.error.includes('人机验证')) {
-                    // Turnstile 验证失败
-                    statusEl.textContent = '❌ ' + result.error;
+                } else if (result.error && result.error.indexOf('人机验证') !== -1) {
+                    statusEl.textContent = '验证失败: ' + result.error;
                     statusEl.className = 'error';
                     goBtn.style.display = 'none';
                 } else {
-                    // 其他错误（如用户名已存在、IP限制等），但 Turnstile 验证已通过
-                    // 这意味着 Turnstile 验证成功，只是注册流程因为其他原因失败
-                    // 我们只关心 Turnstile 验证是否通过
-                    statusEl.textContent = '✅ 验证通过！';
+                    statusEl.textContent = '验证通过';
                     statusEl.className = 'success';
                     goBtn.style.display = 'inline-block';
-                    console.log('⚠️ 注册接口返回错误但 Turnstile 验证已通过:', result.error);
                 }
             })
-            .catch(err => {
-                console.error('后端请求失败:', err);
-                statusEl.textContent = '❌ 网络错误，请刷新重试';
+            .catch(function() {
+                statusEl.textContent = '网络错误，请刷新重试';
                 statusEl.className = 'error';
                 goBtn.style.display = 'none';
             });
         };
 
-        /**
-         * 验证失败
-         */
         window.onVerifyError = function () {
-            console.warn('❌ Turnstile 验证失败');
-            statusEl.textContent = '❌ 验证失败，请点击刷新重试';
+            statusEl.textContent = '验证失败，请刷新重试';
             statusEl.className = 'error';
             goBtn.style.display = 'none';
         };
 
-        /**
-         * 验证过期
-         */
         window.onVerifyExpired = function () {
-            console.warn('⏰ Turnstile 验证已过期');
-            statusEl.textContent = '⏰ 验证已过期，请重新验证';
+            statusEl.textContent = '验证已过期，请重新验证';
             statusEl.className = 'error';
             goBtn.style.display = 'none';
         };
-
-        // ============================================================
-        //  跳转函数
-        // ============================================================
 
         function goToTarget() {
             window.location.href = TARGET_URL;
         }
 
-        // ============================================================
-        //  初始化
-        // ============================================================
-
         document.addEventListener('DOMContentLoaded', function () {
-            statusEl.textContent = '⏳ 正在加载验证...';
+            statusEl.textContent = '加载验证中...';
             statusEl.className = 'loading';
-
-            // 检测 Turnstile 是否就绪
-            function checkReady() {
-                if (typeof turnstile !== 'undefined') {
-                    // Turnstile 已加载
-                } else {
-                    setTimeout(checkReady, 300);
-                }
-            }
-            checkReady();
         });
-
-        // ============================================================
-        //  后端验证说明
-        // ============================================================
-        console.log('ℹ️ 本页面复用 /api/register 接口做 Turnstile 验证');
-        console.log('ℹ️ 验证成功后自动跳转到: ' + TARGET_URL);
     </script>
-
 </body>
 </html>
