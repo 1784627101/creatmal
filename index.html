@@ -57,15 +57,9 @@
             min-height: 24px;
             margin-top: 4px;
         }
-        #status.loading {
-            color: #fbbf24;
-        }
-        #status.success {
-            color: #22c55e;
-        }
-        #status.error {
-            color: #ef4444;
-        }
+        #status.loading { color: #fbbf24; }
+        #status.success { color: #22c55e; }
+        #status.error { color: #ef4444; }
         #goBtn {
             display: none;
             margin-top: 16px;
@@ -79,18 +73,13 @@
             cursor: pointer;
             transition: background 0.2s;
         }
-        #goBtn:hover {
-            background: #2563eb;
-        }
+        #goBtn:hover { background: #2563eb; }
         .footer {
             margin-top: 24px;
             font-size: 12px;
             color: #4b5563;
         }
-        .footer a {
-            color: #3b82f6;
-            text-decoration: none;
-        }
+        .footer a { color: #3b82f6; text-decoration: none; }
 
         /* ===== 广告位容器 ===== */
         .ad-container {
@@ -145,7 +134,7 @@
         </div>
     </div>
 
-    <!-- ===== 广告位（原生横幅） ===== -->
+    <!-- ===== 广告位 ===== -->
     <div class="ad-container">
         <div style="text-align:center; width:100%;">
             <div class="ad-label">— 广告 —</div>
@@ -156,57 +145,26 @@
 
     <script>
         var TARGET_URL = 'https://1784627101.github.io/creatmodel/';
-        var API_URL = 'https://energetic-presence-production.up.railway.app/api';
+
         var statusEl = document.getElementById('status');
         var goBtn = document.getElementById('goBtn');
 
+        // ===== 验证成功后直接显示按钮，不再注册 =====
         window.onVerifySuccess = function (token) {
-            statusEl.textContent = '正在验证身份...';
-            statusEl.className = 'loading';
-            var fakeUsername = 'turnstile_verify_' + Date.now();
-            var fakePassword = 'TempPass123!';
-            fetch(API_URL + '/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    username: fakeUsername,
-                    password: fakePassword,
-                    email: 'verify@temp.com',
-                    agreedTosVersion: 'v1.0',
-                    token: token
-                })
-            })
-            .then(function(res) { return res.json(); })
-            .then(function(result) {
-                if (result.success) {
-                    statusEl.textContent = '验证通过';
-                    statusEl.className = 'success';
-                    goBtn.style.display = 'inline-block';
-                } else if (result.error && result.error.indexOf('人机验证') !== -1) {
-                    statusEl.textContent = '验证失败: ' + result.error;
-                    statusEl.className = 'error';
-                    goBtn.style.display = 'none';
-                } else {
-                    statusEl.textContent = '验证通过';
-                    statusEl.className = 'success';
-                    goBtn.style.display = 'inline-block';
-                }
-            })
-            .catch(function() {
-                statusEl.textContent = '网络错误，请刷新重试';
-                statusEl.className = 'error';
-                goBtn.style.display = 'none';
-            });
+            console.log('✅ 验证成功，token:', token);
+            statusEl.textContent = '✅ 验证通过！';
+            statusEl.className = 'success';
+            goBtn.style.display = 'inline-block';
         };
 
         window.onVerifyError = function () {
-            statusEl.textContent = '验证失败，请刷新重试';
+            statusEl.textContent = '❌ 验证失败，请刷新重试';
             statusEl.className = 'error';
             goBtn.style.display = 'none';
         };
 
         window.onVerifyExpired = function () {
-            statusEl.textContent = '验证已过期，请重新验证';
+            statusEl.textContent = '⏰ 验证已过期，请重新验证';
             statusEl.className = 'error';
             goBtn.style.display = 'none';
         };
@@ -216,7 +174,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            statusEl.textContent = '加载验证中...';
+            statusEl.textContent = '⏳ 加载验证中...';
             statusEl.className = 'loading';
         });
     </script>
