@@ -19,6 +19,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-direction: column;
         }
         .verify-card {
             background: #1a1a1a;
@@ -89,12 +90,38 @@
             color: #3b82f6;
             text-decoration: none;
         }
+
+        /* ===== 广告位容器 ===== */
+        .ad-container {
+            margin-top: 20px;
+            max-width: 420px;
+            width: 92%;
+            min-height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            border: 1px dashed #334155;
+            padding: 12px;
+            font-size: 0.75rem;
+            color: #4b5563;
+        }
+        .ad-container .ad-label {
+            font-size: 0.6rem;
+            color: #4b5563;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
     </style>
 </head>
 <body>
+
     <div class="verify-card">
         <div class="logo">Create<span>Mechanical</span></div>
         <p class="subtitle">人机验证 · 请完成下方验证</p>
+
         <div class="turnstile-wrapper">
             <div class="cf-turnstile"
                  id="turnstileContainer"
@@ -104,10 +131,21 @@
                  data-expired-callback="onVerifyExpired">
             </div>
         </div>
+
         <div id="status">加载验证中...</div>
         <button id="goBtn" onclick="goToTarget()">验证通过，进入网站</button>
+
         <div class="footer">
             由 Cloudflare Turnstile 保护 · <a href="#" onclick="location.reload()">刷新重试</a>
+        </div>
+    </div>
+
+    <!-- ===== 广告位 ===== -->
+    <div class="ad-container">
+        <div style="text-align:center; width:100%;">
+            <div class="ad-label">— 广告 —</div>
+            <!-- ===== 粘贴 Adsterra 代码在这里 ===== -->
+            <script src="https://pl30120300.effectivecpmnetwork.com/df/b4/c3/dfb4c3b5b3d2457219e6076a684a6d7a.js"></script>
         </div>
     </div>
 
@@ -177,5 +215,6 @@
             statusEl.className = 'loading';
         });
     </script>
+
 </body>
 </html>
